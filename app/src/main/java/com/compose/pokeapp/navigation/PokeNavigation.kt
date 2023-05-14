@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
 import com.compose.pokeapp.screens.SplashScreen
+import com.compose.pokeapp.screens.collectionDetail.CollectionDetailsScreen
 import com.compose.pokeapp.screens.details.DetailsScreen
 import com.compose.pokeapp.screens.home.Home
 import com.compose.pokeapp.screens.home.PokeHomeViewModel
@@ -41,6 +42,14 @@ fun PokeNavigation(){
         })){backStackEntry ->
             backStackEntry.arguments?.getString("pokeId").let {
                 DetailsScreen(navController = navController, id = it.toString())
+            }
+        }
+        val detailCollection = PokeScreens.CollectionDetailScreen.name
+        composable("$detailCollection/{pokeId}",arguments = listOf(navArgument("pokeId"){
+            type = NavType.StringType
+        })){backStackEntry ->
+            backStackEntry.arguments?.getString("pokeId").let {
+                CollectionDetailsScreen(navController = navController, id = it.toString())
             }
         }
     }

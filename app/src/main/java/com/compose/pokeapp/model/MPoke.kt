@@ -11,5 +11,6 @@ data class MPoke(
     @get:PropertyName("photo_url")
     @set:PropertyName("photo_url")
     var photoUrl: String? = null,
-    var type: String? = null
+    var type: String? = null,
+    var pokemonId: String? = null
 )

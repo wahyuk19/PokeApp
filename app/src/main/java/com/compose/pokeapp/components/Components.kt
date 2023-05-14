@@ -38,7 +38,10 @@ import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun PokeAppLogo(modifier: Modifier = Modifier) {
-    Image(painter = rememberImagePainter(data = R.drawable.ic_pokemon_logo), contentDescription = "pokemon image")
+    Image(
+        painter = rememberImagePainter(data = R.drawable.ic_pokemon_logo),
+        contentDescription = "pokemon image"
+    )
 }
 
 @Composable
@@ -47,36 +50,41 @@ fun PokeAppBar(
     icon: ImageVector? = null,
     showProfile: Boolean = true,
     navController: NavController,
-    onBackArrowClicked:() -> Unit = {}
+    onBackArrowClicked: () -> Unit = {}
 ) {
 
-    TopAppBar(title = {
-        Row(verticalAlignment = Alignment.CenterVertically){
-            if (showProfile) {
-                Image(painter = rememberImagePainter(data = R.drawable.ic_megaball),
-                    contentDescription = "Logo Icon",
-                    modifier = Modifier
-                        .width(36.dp)
-                        .height(36.dp)
+    TopAppBar(
+        title = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (showProfile) {
+                    Image(painter = rememberImagePainter(data = R.drawable.ic_megaball),
+                        contentDescription = "Logo Icon",
+                        modifier = Modifier
+                            .width(36.dp)
+                            .height(36.dp)
+                            .clickable {
+                                navController.navigate(PokeScreens.MyListScreen.name)
+                            }
+                    )
+
+                }
+                if (icon != null) {
+                    Icon(imageVector = icon, contentDescription = "arrow back",
+                        tint = Color.Red.copy(alpha = 0.7f),
+                        modifier = Modifier.clickable { onBackArrowClicked.invoke() })
+                }
+                Spacer(modifier = Modifier.width(40.dp))
+                Text(
+                    text = title,
+                    color = Color.Red.copy(alpha = 0.7f),
+                    style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 20.sp)
                 )
 
+
             }
-            if (icon != null) {
-                Icon(imageVector = icon, contentDescription = "arrow back",
-                    tint = Color.Red.copy(alpha = 0.7f),
-                    modifier = Modifier.clickable { onBackArrowClicked.invoke() })
-            }
-            Spacer(modifier = Modifier.width(40.dp) )
-            Text(text = title,
-                color = Color.Red.copy(alpha = 0.7f),
-                style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 20.sp)
-            )
 
 
-        }
-
-
-    },
+        },
         actions = {
             IconButton(onClick = {
                 FirebaseAuth.getInstance()
@@ -85,35 +93,36 @@ fun PokeAppBar(
                     }
             }) {
                 if (showProfile) Row() {
-                    Icon(imageVector = Icons.Filled.Logout ,
-                        contentDescription = "Logout" ,
+                    Icon(
+                        imageVector = Icons.Filled.Logout,
+                        contentDescription = "Logout",
                         // tint = Color.Green.copy(alpha = 0.4f)
                     )
-                } else Row() {
-                    Image(modifier = Modifier.width(24.dp).height(24.dp),
-                        painter = rememberImagePainter(data = R.drawable.ic_megaball),
-                        contentDescription = "collection",
-
-                        // tint = Color.Green.copy(alpha = 0.4f)
-                    )
+                } else Box {
                 }
-
 
 
             }
         },
         backgroundColor = Color.Transparent,
-        elevation = 0.dp)
+        elevation = 0.dp
+    )
 
 }
 
 @Composable
-fun FABContent(onTap: () -> Unit) {
-    FloatingActionButton(onClick = { onTap()},) {
-        Image(painter = rememberImagePainter(data = R.drawable.ic_pokeball),
+fun FABContent(isCollection: Boolean,onTap: () -> Unit) {
+    FloatingActionButton(onClick = { onTap() }) {
+        Image(
+            painter = rememberImagePainter(data = if(isCollection){
+                R.drawable.ic_pokeball_open
+            }else{
+                R.drawable.ic_pokeball
+            }),
             contentDescription = "get pokemon", modifier = Modifier
                 .width(48.dp)
-                .height(48.dp))
+                .height(48.dp)
+        )
 
     }
 
@@ -128,16 +137,39 @@ fun EmailInput(
     imeAction: ImeAction = ImeAction.Next,
     onAction: KeyboardActions = KeyboardActions.Default
 ) {
-    InputField(modifier = modifier,
+    InputField(
+        modifier = modifier,
         valueState = emailState,
         labelId = labelId,
         enabled = enabled,
         keyboardType = KeyboardType.Email,
         imeAction = imeAction,
-        onAction = onAction)
+        onAction = onAction
+    )
+}
+
+@Composable
+fun PokemonNameInput(
+    modifier: Modifier = Modifier,
+    nameState: MutableState<String>,
+    labelId: String = "Name",
+    enabled: Boolean = true,
+    imeAction: ImeAction = ImeAction.Next,
+    onAction: KeyboardActions = KeyboardActions.Default
+) {
+    InputField(
+        modifier = modifier,
+        valueState = nameState,
+        labelId = labelId,
+        enabled = enabled,
+        keyboardType = KeyboardType.Email,
+        imeAction = imeAction,
+        onAction = onAction
+    )
 
 
 }
+
 
 @Composable
 fun InputField(
@@ -151,18 +183,22 @@ fun InputField(
     onAction: KeyboardActions = KeyboardActions.Default
 ) {
 
-    OutlinedTextField(value = valueState.value,
-        onValueChange = { valueState.value = it},
-        label = { Text(text = labelId)},
+    OutlinedTextField(
+        value = valueState.value,
+        onValueChange = { valueState.value = it },
+        label = { Text(text = labelId) },
         singleLine = isSingleLine,
-        textStyle = TextStyle(fontSize = 18.sp,
-            color = MaterialTheme.colors.onBackground),
+        textStyle = TextStyle(
+            fontSize = 18.sp,
+            color = MaterialTheme.colors.onBackground
+        ),
         modifier = modifier
             .padding(bottom = 10.dp, start = 10.dp, end = 10.dp)
             .fillMaxWidth(),
         enabled = enabled,
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction),
-        keyboardActions = onAction)
+        keyboardActions = onAction
+    )
 
 
 }
@@ -180,11 +216,12 @@ fun PasswordInput(
 
     val visualTransformation = if (passwordVisibility.value) VisualTransformation.None else
         PasswordVisualTransformation()
-    OutlinedTextField(value = passwordState.value,
+    OutlinedTextField(
+        value = passwordState.value,
         onValueChange = {
             passwordState.value = it
         },
-        label = { Text(text = labelId)},
+        label = { Text(text = labelId) },
         singleLine = true,
         textStyle = TextStyle(fontSize = 18.sp, color = MaterialTheme.colors.onBackground),
         modifier = modifier
@@ -193,17 +230,19 @@ fun PasswordInput(
         enabled = enabled,
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Password,
-            imeAction = imeAction),
+            imeAction = imeAction
+        ),
         visualTransformation = visualTransformation,
-        trailingIcon = {PasswordVisibility(passwordVisibility = passwordVisibility)},
-        keyboardActions = onAction)
+        trailingIcon = { PasswordVisibility(passwordVisibility = passwordVisibility) },
+        keyboardActions = onAction
+    )
 
 }
 
 @Composable
 fun PasswordVisibility(passwordVisibility: MutableState<Boolean>) {
     val visible = passwordVisibility.value
-    IconButton(onClick = { passwordVisibility.value = !visible}) {
+    IconButton(onClick = { passwordVisibility.value = !visible }) {
         Icons.Default.Close
 
     }

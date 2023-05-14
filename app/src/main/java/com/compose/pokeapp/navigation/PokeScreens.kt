@@ -5,6 +5,7 @@ enum class PokeScreens {
     LoginScreen,
     DetailScreen,
     HomeScreen,
+    CollectionDetailScreen,
     MyListScreen;
 
     companion object {
@@ -14,6 +15,7 @@ enum class PokeScreens {
             LoginScreen.name -> LoginScreen
             DetailScreen.name -> DetailScreen
             HomeScreen.name -> HomeScreen
+            CollectionDetailScreen.name -> CollectionDetailScreen
             MyListScreen.name -> MyListScreen
             null -> HomeScreen
             else -> throw IllegalArgumentException("Route $route is not recognized")

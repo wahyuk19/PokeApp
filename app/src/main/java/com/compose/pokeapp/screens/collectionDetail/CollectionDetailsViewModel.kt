@@ -1,6 +1,5 @@
-package com.compose.pokeapp.screens.mylist
+package com.compose.pokeapp.screens.collectionDetail
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -13,9 +12,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PokeMyListViewModel @Inject constructor(
-    private val repository: FireRepository
-):ViewModel() {
+class CollectionDetailsViewModel @Inject constructor(private val fireRepository: FireRepository):ViewModel() {
     val data: MutableState<DataOrException<List<MPoke>, Boolean, Exception>>
             = mutableStateOf(DataOrException(listOf(), true,Exception("")))
 
@@ -26,7 +23,7 @@ class PokeMyListViewModel @Inject constructor(
     private fun getAllPokemonFromDatabase() {
         viewModelScope.launch {
             data.value.loading = true
-            data.value = repository.getListFromDatabase()
+            data.value = fireRepository.getListFromDatabase()
             if (!data.value.data.isNullOrEmpty()) data.value.loading = false
         }
     }
