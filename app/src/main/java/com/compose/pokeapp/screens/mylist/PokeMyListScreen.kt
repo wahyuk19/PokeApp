@@ -28,9 +28,16 @@ import com.compose.pokeapp.screens.home.PokemonRow
 import java.util.*
 
 @Composable
-fun MyListScreen(navController: NavController,viewModel: PokeMyListViewModel = hiltViewModel()){
+fun MyListScreen(navController: NavController, viewModel: PokeMyListViewModel = hiltViewModel()) {
     Scaffold(topBar = {
-        PokeAppBar(title = "My Pokemon Collection",icon = Icons.Default.ArrowBack,showProfile = false, navController = navController)
+        PokeAppBar(
+            title = "My Pokemon Collection",
+            icon = Icons.Default.ArrowBack,
+            showProfile = false,
+            navController = navController
+        ) {
+            navController.navigate(PokeScreens.HomeScreen.name)
+        }
     }) {
         Surface() {
             Column {
@@ -45,28 +52,39 @@ fun PokemonMyList(
     navController: NavController,
     viewModel: PokeMyListViewModel = hiltViewModel()
 ) {
-
-
     val listOfPokemon = viewModel.data.value.data!!
     if (viewModel.data.value.loading == true) {
-        Column(modifier = Modifier.fillMaxSize(),
+        Column(
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             CircularProgressIndicator()
         }
-
     } else {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp)
-        ) {
-            items(items = listOfPokemon) { poke ->
-                PokemonRow(poke, navController)
-                Log.d("TAG", "PokemonList: $poke")
+        if (viewModel.data.value.data.isNullOrEmpty()) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                Text(
+                    text = "Collection is empty"
+                )
             }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp)
+            ) {
+                items(items = listOfPokemon) { poke ->
+                    PokemonRow(poke, navController)
+                    Log.d("TAG", "PokemonList: $poke")
+                }
 
+            }
         }
+
     }
 
 }
@@ -94,11 +112,6 @@ fun PokemonRow(
             verticalAlignment = Alignment.Top
         ) {
 
-//            val imageUrl: String = if(pokemon.volumeInfo.imageLinks.smallThumbnail.isEmpty())
-//                "https://images.unsplash.com/photo-1541963463532-d68292c34b19?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=80&q=80"
-//            else {
-//                pokemon.volumeInfo.imageLinks.smallThumbnail
-//            }
             Image(
                 painter = rememberImagePainter(data = imageUrl),
                 contentDescription = "pokemon image",
@@ -110,7 +123,11 @@ fun PokemonRow(
 
             Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxHeight()) {
                 Text(
-                    text = pokemon.name!!.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
+                    text = pokemon.alias!!.replaceFirstChar {
+                        if (it.isLowerCase()) it.titlecase(
+                            Locale.getDefault()
+                        ) else it.toString()
+                    },
                     textAlign = TextAlign.Center
                 )
             }

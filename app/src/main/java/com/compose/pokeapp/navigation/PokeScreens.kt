@@ -17,7 +17,6 @@ enum class PokeScreens {
             HomeScreen.name -> HomeScreen
             CollectionDetailScreen.name -> CollectionDetailScreen
             MyListScreen.name -> MyListScreen
-            null -> HomeScreen
             else -> throw IllegalArgumentException("Route $route is not recognized")
         }
     }

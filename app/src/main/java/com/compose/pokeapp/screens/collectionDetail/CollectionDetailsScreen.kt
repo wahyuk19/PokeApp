@@ -12,6 +12,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -22,8 +23,10 @@ import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.compose.pokeapp.components.FABContent
 import com.compose.pokeapp.components.PokeAppBar
+import com.compose.pokeapp.components.PokemonNameInput
 import com.compose.pokeapp.model.MPoke
 import com.compose.pokeapp.navigation.PokeScreens
+import com.compose.pokeapp.screens.login.SubmitButton
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
 
@@ -79,6 +82,7 @@ fun ShowCollectionDetails(
     var catchStatus by remember {
         mutableStateOf(state)
     }
+    val name = rememberSaveable { mutableStateOf(pokemonData.alias.toString()) }
     val context = LocalContext.current
 
     Card(
@@ -94,11 +98,29 @@ fun ShowCollectionDetails(
                 .padding(1.dp)
         )
     }
-    Text(
-        text = pokemonData.name!!.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
-        style = MaterialTheme.typography.h6,
-        overflow = TextOverflow.Ellipsis,
-    )
+    PokemonNameInput(nameState = name, labelId = "Name")
+    Button(
+        onClick = {
+            val mPoke = MPoke(
+                name = pokemonData.name,
+                moves = moves,
+                type = types,
+                photoUrl = pokemonData.photoUrl,
+                pokemonId = pokemonData.id.toString(),
+                t1 = pokemonData.t1,
+                t2 = pokemonData.t2,
+                alias = name.value
+            )
+            pokemonData.pokemonId?.let { updateFirebase(context, mPoke, name.value, navController) }
+        },
+        modifier = Modifier
+            .padding(3.dp)
+            .width(100.dp),
+        shape = CircleShape
+    ) {
+        Text(text = "Update", modifier = Modifier.padding(5.dp))
+
+    }
     Text(text = "Type: $types")
     Spacer(modifier = Modifier.height(5.dp))
     Text(text = "Moves: $moves", maxLines = 5, modifier = Modifier.padding(4.dp))
@@ -106,11 +128,12 @@ fun ShowCollectionDetails(
     FABContent(true) {
         Log.d("TAG", "showPokemonDetails: clicked")
         catchStatus = 1
+        //start release/remove pokemon using prime number
         val randomInt = (0..100).random()
         var flag = false
         Log.d("TAG", "showPokemonDetails: result $randomInt")
-        for(i in 2..randomInt / 2){
-            if(randomInt % i == 0){
+        for (i in 2..randomInt / 2) {
+            if (randomInt % i == 0) {
                 flag = true
                 break
             }
@@ -123,12 +146,12 @@ fun ShowCollectionDetails(
                     moves = moves,
                     type = types,
                     photoUrl = pokemonData.photoUrl,
-                    pokemonId = pokemonData.id.toString()
+                    pokemonId = pokemonData.id.toString(),
                 )
-                deleteFromFirebase(context,poke,navController)
+                deleteFromFirebase(context, poke, navController)
                 Handler(Looper.getMainLooper()).postDelayed({
                     navController.navigate(PokeScreens.MyListScreen.name)
-                },1000)
+                }, 1000)
             } else {
                 catchStatus = 3
             }
@@ -153,6 +176,52 @@ fun ShowCollectionDetails(
     )
 }
 
+fun updateFirebase(
+    context: Context,
+    pokemonData: MPoke,
+    name: String,
+    navController: NavController
+) {
+    //step to fibonacci series
+    val n = 100
+    var t1 = try {
+        pokemonData.t1!!
+    } catch (e: Exception) {
+        e.printStackTrace()
+        0
+    }
+    Log.d("TAG", "updateFirebase: $t1")
+    var t2 = try {
+        pokemonData.t2!!
+    } catch (e: Exception) {
+        1
+    }
+    val updatedName = "${pokemonData.alias}-$t1"
+
+    val sum = t1 + t2
+    t1 = t2
+    t2 = sum
+    Log.d("TAG", "updateFirebase: updated $updatedName")
+
+    val db = FirebaseFirestore.getInstance()
+    pokemonData.pokemonId?.let {
+        db.collection("pokemon").document(it).update("alias", updatedName, "t1", t1, "t2", t2)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(
+                        context,
+                        "Successfully renamed to $updatedName",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    navController.navigate(PokeScreens.MyListScreen.name)
+                }
+
+            }.addOnFailureListener {
+            Log.w("Error", "updateToFirebase:  Error update db", it)
+        }
+    }
+}
+
 fun deleteFromFirebase(context: Context, pokemon: MPoke, navController: NavController) {
     val db = FirebaseFirestore.getInstance()
     pokemon.pokemonId?.let {
@@ -165,7 +234,7 @@ fun deleteFromFirebase(context: Context, pokemon: MPoke, navController: NavContr
                 ).show()
             }
         }.addOnFailureListener {
-            Log.w("Error", "SaveToFirebase:  Error delete db", it)
+            Log.w("Error", "deleteFromFirebase:  Error delete db", it)
         }
     }
 }

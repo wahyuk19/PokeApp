@@ -91,8 +91,6 @@ fun ShowPokemonDetails(
         mutableStateOf(state)
     }
     val context = LocalContext.current
-//    val pokeId = pokeInfo.data?.id
-
 
     Card(
         modifier = Modifier.padding(34.dp),
@@ -127,6 +125,7 @@ fun ShowPokemonDetails(
     FABContent(false) {
         Log.d("TAG", "showPokemonDetails: clicked")
         catchStatus = 1
+        //start saving to database using random boolean
         val random = Random()
         val randomBoolean = random.nextBoolean()
         Log.d("TAG", "showPokemonDetails: result $randomBoolean")
@@ -138,7 +137,10 @@ fun ShowPokemonDetails(
                     moves = moves,
                     type = types,
                     photoUrl = pokemonData.sprites.other.home.front_default,
-                    pokemonId = pokemonData.id.toString()
+                    pokemonId = pokemonData.id.toString(),
+                    t1 = 0,
+                    t2 = 1,
+                    alias = pokemonData.name
                 )
                 saveToFirebase(context, poke, navController)
             } else {

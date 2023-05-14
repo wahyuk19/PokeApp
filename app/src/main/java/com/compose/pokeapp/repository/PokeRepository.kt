@@ -1,6 +1,5 @@
 package com.compose.pokeapp.repository
 
-import android.util.Log
 import com.compose.pokeapp.data.Resource
 import com.compose.pokeapp.model.PokemonDetails
 import com.compose.pokeapp.network.PokeApi

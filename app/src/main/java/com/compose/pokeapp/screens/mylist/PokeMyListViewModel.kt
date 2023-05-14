@@ -1,6 +1,5 @@
 package com.compose.pokeapp.screens.mylist
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -27,7 +26,11 @@ class PokeMyListViewModel @Inject constructor(
         viewModelScope.launch {
             data.value.loading = true
             data.value = repository.getListFromDatabase()
-            if (!data.value.data.isNullOrEmpty()) data.value.loading = false
+            if (!data.value.data.isNullOrEmpty()){
+                data.value.loading = false
+            }else{
+                data.value.loading = false
+            }
         }
     }
 }

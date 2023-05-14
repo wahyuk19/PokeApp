@@ -3,21 +3,16 @@ package com.compose.pokeapp.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
@@ -26,8 +21,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -111,14 +104,16 @@ fun PokeAppBar(
 }
 
 @Composable
-fun FABContent(isCollection: Boolean,onTap: () -> Unit) {
+fun FABContent(isCollection: Boolean, onTap: () -> Unit) {
     FloatingActionButton(onClick = { onTap() }) {
         Image(
-            painter = rememberImagePainter(data = if(isCollection){
-                R.drawable.ic_pokeball_open
-            }else{
-                R.drawable.ic_pokeball
-            }),
+            painter = rememberImagePainter(
+                data = if (isCollection) {
+                    R.drawable.ic_pokeball_open
+                } else {
+                    R.drawable.ic_pokeball
+                }
+            ),
             contentDescription = "get pokemon", modifier = Modifier
                 .width(48.dp)
                 .height(48.dp)
