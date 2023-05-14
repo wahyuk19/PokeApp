@@ -2,6 +2,7 @@ package com.compose.pokeapp.navigation
 
 enum class PokeScreens {
     SplashScreen,
+    LoginScreen,
     DetailScreen,
     HomeScreen,
     MyListScreen;
@@ -10,6 +11,7 @@ enum class PokeScreens {
         fun fromRoute(route: String):PokeScreens
         = when(route.substringBefore("/")){
             SplashScreen.name -> SplashScreen
+            LoginScreen.name -> LoginScreen
             DetailScreen.name -> DetailScreen
             HomeScreen.name -> HomeScreen
             MyListScreen.name -> MyListScreen

@@ -36,7 +36,11 @@ fun SplashScreen(navController: NavController){
         }))
         delay(2000L)
 
-        navController.navigate(PokeScreens.HomeScreen.name)
+        if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()){
+            navController.navigate(PokeScreens.LoginScreen.name)
+        }else {
+            navController.navigate(PokeScreens.HomeScreen.name)
+        }
     }
 
     Surface(modifier = Modifier

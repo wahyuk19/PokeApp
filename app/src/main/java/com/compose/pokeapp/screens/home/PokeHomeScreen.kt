@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,16 +31,12 @@ import java.util.*
 @Composable
 fun Home(navController: NavController, viewModel: PokeHomeViewModel = hiltViewModel()) {
     Scaffold(topBar = {
-        PokeAppBar(title = "Pokemon Lists", navController = navController)
+        PokeAppBar(title = "Pokemon Index", navController = navController)
     }) {
         Surface() {
             Column {
-                Spacer(modifier = Modifier.height(13.dp))
                 PokemonList(navController = navController)
-
             }
-
-
         }
     }
 }
@@ -53,11 +50,11 @@ fun PokemonList(
 
     val listOfPokemon = viewModel.list
     if (viewModel.isLoading) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
+        Column(modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            LinearProgressIndicator()
+            CircularProgressIndicator()
         }
 
     } else {
@@ -80,15 +77,19 @@ fun PokemonRow(
     pokemon: com.compose.pokeapp.model.Result,
     navController: NavController
 ) {
+    val id = pokemon.url.substringAfter("pokemon/", "").dropLast(1)
+    Log.d("TAG", "PokemonRow: id $id")
+    val imageUrl = "${BuildConfig.IMAGE_URL}$id.png"
+    Log.d("TAG", "PokemonRow: $imageUrl")
     Card(
         modifier = Modifier
-//        .clickable {
-//            navController.navigate(PokeScreens.DetailScreen.name + "/${pokemon.name}")
-//        }
+        .clickable {
+            navController.navigate(PokeScreens.DetailScreen.name + "/${id}")
+        }
             .fillMaxWidth()
             .height(72.dp)
             .padding(3.dp),
-        shape = RectangleShape,
+        shape = RoundedCornerShape(20.dp),
         elevation = 7.dp
     ) {
         Row(
@@ -101,10 +102,6 @@ fun PokemonRow(
 //            else {
 //                pokemon.volumeInfo.imageLinks.smallThumbnail
 //            }
-            val id = pokemon.url.substringAfter("pokemon/", "").dropLast(1)
-            Log.d("TAG", "PokemonRow: id $id")
-            val imageUrl = "${BuildConfig.IMAGE_URL}$id.png"
-            Log.d("TAG", "PokemonRow: $imageUrl")
             Image(
                 painter = rememberImagePainter(data = imageUrl),
                 contentDescription = "pokemon image",
