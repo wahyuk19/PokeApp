@@ -9,17 +9,29 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.OnLifecycleEvent
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.compose.pokeapp.BuildConfig
 import com.compose.pokeapp.components.PokeAppBar
+import com.compose.pokeapp.data.Resource
+import com.compose.pokeapp.db.PokemonEntity
 import com.compose.pokeapp.navigation.PokeScreens
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import java.util.*
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -41,36 +53,36 @@ fun PokemonList(
     navController: NavController,
     viewModel: PokeHomeViewModel = hiltViewModel()
 ) {
+    val pokemonList = viewModel.pokemonList.collectAsState().value
 
-
-    val listOfPokemon = viewModel.list
-    if (viewModel.isLoading) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            CircularProgressIndicator()
-        }
-
-    } else {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp)
-        ) {
-            items(items = listOfPokemon) { poke ->
-                PokemonRow(poke, navController)
-                Log.d("TAG", "PokemonList: $poke")
-            }
-
-        }
-    }
+    Log.d("TAG", "PokemonList: $pokemonList")
+//    if (viewModel.isLoading) {
+//        Column(
+//            modifier = Modifier.fillMaxSize(),
+//            horizontalAlignment = Alignment.CenterHorizontally,
+//            verticalArrangement = Arrangement.Center
+//        ) {
+//            CircularProgressIndicator()
+//        }
+//
+//    } else {
+//        LazyColumn(
+//            modifier = Modifier.fillMaxSize(),
+//            contentPadding = PaddingValues(16.dp)
+//        ) {
+//            items(items = listOfPokemon) { poke ->
+//                PokemonRow(poke, navController)
+//                Log.d("TAG", "PokemonList: $poke")
+//            }
+//
+//        }
+//    }
 
 }
 
 @Composable
 fun PokemonRow(
-    pokemon: com.compose.pokeapp.model.Result,
+    pokemon: PokemonEntity,
     navController: NavController
 ) {
     val id = pokemon.url.substringAfter("pokemon/", "").dropLast(1)
