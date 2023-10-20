@@ -38,7 +38,7 @@ import java.util.*
 @Composable
 fun Home(navController: NavController, viewModel: PokeHomeViewModel = hiltViewModel()) {
     Scaffold(topBar = {
-        PokeAppBar(title = "Pokemon Index", navController = navController)
+        PokeAppBar(title = "Pokemon Index")
     }) {
         Surface() {
             Column {
@@ -56,27 +56,27 @@ fun PokemonList(
     val pokemonList = viewModel.pokemonList.collectAsState().value
 
     Log.d("TAG", "PokemonList: $pokemonList")
-//    if (viewModel.isLoading) {
-//        Column(
-//            modifier = Modifier.fillMaxSize(),
-//            horizontalAlignment = Alignment.CenterHorizontally,
-//            verticalArrangement = Arrangement.Center
-//        ) {
-//            CircularProgressIndicator()
-//        }
-//
-//    } else {
-//        LazyColumn(
-//            modifier = Modifier.fillMaxSize(),
-//            contentPadding = PaddingValues(16.dp)
-//        ) {
-//            items(items = listOfPokemon) { poke ->
-//                PokemonRow(poke, navController)
-//                Log.d("TAG", "PokemonList: $poke")
-//            }
-//
-//        }
-//    }
+    if (pokemonList.isEmpty()) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            CircularProgressIndicator()
+        }
+
+    } else {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp)
+        ) {
+            items(items = pokemonList) { poke ->
+                PokemonRow(poke, navController)
+                Log.d("TAG", "PokemonList: $poke")
+            }
+
+        }
+    }
 
 }
 

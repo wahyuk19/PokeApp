@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.compose.pokeapp.navigation.PokeNavigation
 import com.compose.pokeapp.ui.theme.PokeAppTheme
-import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
 
 @ExperimentalComposeUiApi

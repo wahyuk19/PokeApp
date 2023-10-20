@@ -27,7 +27,7 @@ android {
     buildTypes {
         debug {
             buildConfigField("String", "BASE_URL", "\"https://pokeapi.co/api/v2/\"")
-            buildConfigField("String", "IMAGE_URL", "\"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/\"")
+            buildConfigField("String", "IMAGE_URL", "\"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/\"")
         }
         release {
             minifyEnabled false
@@ -70,10 +70,6 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
     implementation "androidx.compose.material:material-icons-extended:1.0.4"
 
-    implementation platform('com.google.firebase:firebase-bom:29.0.0')
-    implementation 'com.google.firebase:firebase-auth-ktx'
-    implementation 'com.google.firebase:firebase-firestore-ktx'
-
     implementation 'com.google.dagger:hilt-android:2.39'
     implementation "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03"
 
@@ -110,4 +106,7 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.5.2"
+
+    implementation("androidx.paging:paging-runtime:3.1.1")
+    implementation("androidx.paging:paging-compose:1.0.0-alpha16")
 }

@@ -32,7 +32,7 @@ class PokeHomeViewModel @Inject constructor(
     init {
         viewModelScope.launch(Dispatchers.IO) {
             repository.getAllPokemonAsc().distinctUntilChanged().collect { listOfPokemon ->
-                if(listOfPokemon.isNullOrEmpty()){
+                if(listOfPokemon.isEmpty()){
                     Log.d("TAG", "empty list")
                 }else{
                     _pokemonList.value = listOfPokemon
@@ -41,7 +41,7 @@ class PokeHomeViewModel @Inject constructor(
         }
     }
 
-    suspend fun getAllPokemonAsc() = repository.getAllPokemonAsc()
+//    suspend fun getAllPokemonAsc() = repository.getAllPokemonAsc()
 //    fun getAllPokemonDesc(): LiveData<List<PokemonEntity>> = repository.getAllPokemonDesc()
 
 //    var list: List<com.compose.pokeapp.model.Result> by mutableStateOf(listOf())

@@ -18,12 +18,10 @@ import java.util.concurrent.Executors
 import javax.inject.Inject
 
 class PokeRepository @Inject constructor(private val pokemonDao: PokemonDao,private val api: PokeApi) {
-    private val executorService: ExecutorService = Executors.newSingleThreadExecutor()
-    private val result = MediatorLiveData<Resource<List<PokemonEntity>>>()
 
     suspend fun getAllPokemonAsc(): Flow<List<PokemonEntity>> {
         try{
-            val client = api.getAllPokemon(limit = 20, offset = 0)
+            val client = api.getAllPokemon(limit = 1000, offset = 0)
             client.results.forEach {
                     val pokemonData = PokemonEntity(id = it.url.substringAfter("pokemon/", "").dropLast(1).toInt()
                 , name = it.name, url = it.url)

@@ -5,10 +5,7 @@ import androidx.room.Room
 import com.compose.pokeapp.BuildConfig
 import com.compose.pokeapp.db.PokemonDao
 import com.compose.pokeapp.db.PokemonRoomDatabase
-import com.compose.pokeapp.model.Pokemon
 import com.compose.pokeapp.network.PokeApi
-import com.compose.pokeapp.repository.FireRepository
-import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,11 +21,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-    @Singleton
-    @Provides
-    fun provideFirePokeRepository()
-            = FireRepository(queryPoke = FirebaseFirestore.getInstance()
-        .collection("pokemon"))
 
     @Singleton
     @Provides

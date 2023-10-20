@@ -1,33 +1,17 @@
 package com.compose.pokeapp.screens.details
 
-import android.content.Context
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
-import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil.compose.rememberImagePainter
-import com.compose.pokeapp.components.FABContent
 import com.compose.pokeapp.components.PokeAppBar
-import com.compose.pokeapp.data.Resource
-import com.compose.pokeapp.model.MPoke
-import com.compose.pokeapp.model.PokemonDetails
 import com.compose.pokeapp.navigation.PokeScreens
-import com.google.firebase.firestore.FirebaseFirestore
-import java.util.*
 
 @Composable
 fun DetailsScreen(
@@ -39,7 +23,7 @@ fun DetailsScreen(
         PokeAppBar(
             title =
                 "Pokemon Details"
-            , icon = Icons.Default.ArrowBack, showProfile = false, navController = navController
+            , icon = Icons.Default.ArrowBack, showProfile = false
         ) {
             navController.navigate(PokeScreens.HomeScreen.name)
         }
