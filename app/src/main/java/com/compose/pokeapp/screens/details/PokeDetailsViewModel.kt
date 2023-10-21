@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PokeDetailsViewModel @Inject constructor(private val repository: PokeRepository):ViewModel() {
-    suspend fun getPokemonDetails(id: String): Resource<PokemonDetails>?{
+    suspend fun getPokemonDetails(id: String): Resource<PokemonDetails>{
         return repository.getPokemonDetails(id)
     }
 }

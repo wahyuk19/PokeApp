@@ -10,28 +10,20 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.OnLifecycleEvent
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.compose.pokeapp.BuildConfig
+import com.compose.pokeapp.R
 import com.compose.pokeapp.components.PokeAppBar
-import com.compose.pokeapp.data.Resource
+import com.compose.pokeapp.components.SearchBar
 import com.compose.pokeapp.db.PokemonEntity
 import com.compose.pokeapp.navigation.PokeScreens
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
 import java.util.*
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -42,7 +34,7 @@ fun Home(navController: NavController, viewModel: PokeHomeViewModel = hiltViewMo
     }) {
         Surface() {
             Column {
-                PokemonList(navController = navController)
+                PokemonList(navController = navController, viewModel)
             }
         }
     }
@@ -51,33 +43,106 @@ fun Home(navController: NavController, viewModel: PokeHomeViewModel = hiltViewMo
 @Composable
 fun PokemonList(
     navController: NavController,
-    viewModel: PokeHomeViewModel = hiltViewModel()
+    viewModel: PokeHomeViewModel
 ) {
-    val pokemonList = viewModel.pokemonList.collectAsState().value
-
-    Log.d("TAG", "PokemonList: $pokemonList")
-    if (pokemonList.isEmpty()) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            CircularProgressIndicator()
-        }
-
-    } else {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp)
-        ) {
-            items(items = pokemonList) { poke ->
-                PokemonRow(poke, navController)
-                Log.d("TAG", "PokemonList: $poke")
-            }
-
-        }
+    val name = rememberSaveable { mutableStateOf("") }
+    val isSearch = rememberSaveable { mutableStateOf(false) }
+    var searchPokemon by remember { mutableStateOf(mutableListOf<PokemonEntity>()) }
+    var selectedOption by remember { mutableStateOf(0) }
+    var pokemonList by remember {
+        mutableStateOf(mutableListOf<PokemonEntity>())
     }
 
+    Spacer(modifier = Modifier.height(4.dp))
+    SearchBar(nameState = name, searchCallback = {
+        isSearch.value = true
+        viewModel.getPokemonByName(name.value) { pokeData ->
+            searchPokemon = pokeData.toMutableList()
+        }
+    })
+    if (name.value.isEmpty()) {
+        if (pokemonList.isNotEmpty()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp), horizontalArrangement = Arrangement.Start
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Sort : ")
+                    RadioButton(selected = selectedOption == 0, onClick = {
+                        selectedOption = 0
+                        isSearch.value = false
+                    })
+                    Text(text = "Asc")
+                }
+                Spacer(modifier = Modifier.width(16.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(selected = selectedOption == 1, onClick = {
+                        selectedOption = 1
+                        isSearch.value = false
+                    })
+                    Text(text = "Desc")
+                }
+            }
+        }
+        isSearch.value = false
+    }
+
+    Log.d("TAG", "PokemonList: ${name.value}")
+    if (isSearch.value) {
+        Log.d("TAG", "PokemonList: query $searchPokemon")
+        Spacer(modifier = Modifier.height(4.dp))
+        if (searchPokemon.isNotEmpty()) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp)
+            ) {
+
+                items(items = searchPokemon) { poke ->
+                    PokemonRow(poke, navController)
+                    Log.d("TAG", "PokemonList: $poke")
+                }
+            }
+        } else {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(text = "No Records found")
+            }
+        }
+    } else {
+        if (selectedOption == 0) {
+            pokemonList = viewModel.pokemonList.collectAsState().value.toMutableList()
+        } else {
+            viewModel.getAllPokemonDesc { descData ->
+                Log.d("TAG", "PokemonList: descData $descData")
+                pokemonList = descData.toMutableList()
+            }
+        }
+        Spacer(modifier = Modifier.height(4.dp))
+        if (pokemonList.isEmpty()) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                CircularProgressIndicator()
+            }
+
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp)
+            ) {
+                items(items = pokemonList) { poke ->
+                    PokemonRow(poke, navController)
+                    Log.d("TAG", "PokemonList: dataShow $poke")
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -86,9 +151,7 @@ fun PokemonRow(
     navController: NavController
 ) {
     val id = pokemon.url.substringAfter("pokemon/", "").dropLast(1)
-    Log.d("TAG", "PokemonRow: id $id")
     val imageUrl = "${BuildConfig.IMAGE_URL}$id.png"
-    Log.d("TAG", "PokemonRow: $imageUrl")
     Card(
         modifier = Modifier
             .clickable {
@@ -105,7 +168,9 @@ fun PokemonRow(
             verticalAlignment = Alignment.Top
         ) {
             Image(
-                painter = rememberImagePainter(data = imageUrl),
+                painter = rememberImagePainter(data = imageUrl, builder = {
+                    placeholder(R.drawable.ic_baseline_broken_image_24)
+                }),
                 contentDescription = "pokemon image",
                 modifier = Modifier
                     .width(80.dp)

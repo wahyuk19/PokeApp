@@ -1,6 +1,5 @@
 package com.compose.pokeapp.db
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
@@ -20,4 +19,7 @@ interface PokemonDao {
 
     @Query("SELECT * from pokemon_list ORDER BY id DESC")
     fun getAllPokemonDesc(): Flow<List<PokemonEntity>>
+
+    @Query("SELECT * from pokemon_list WHERE name LIKE '%' || :pokeName || '%'")
+    fun getPokemonByName(pokeName: String): Flow<List<PokemonEntity>>
 }
